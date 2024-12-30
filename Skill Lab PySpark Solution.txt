@@ -1,0 +1,171 @@
+Q1) Employee
+
+pip install pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, isnull, when, count, max as spark_max
+
+# Initialize a Spark session
+spark = SparkSession.builder.appName("EmployeeDataCleaning").getOrCreate()
+
+# Load the dataset into a PySpark DataFrame
+file_path = "emp_data.csv"  # Adjust path if necessary
+df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# Display the schema and the first few rows
+print("Initial Schema:")
+df.printSchema()
+print("Sample Data:")
+df.show(5, truncate=False)
+
+# 1. Handle Missing Values
+# Identify columns with missing values
+missing_values = df.select([count(when(isnull(c), c)).alias(c) for c in df.columns])
+print("Missing Values in Each Column:")
+missing_values.show()
+
+# Replace missing values in critical columns like LastName
+df = df.fillna({"LastName": "Unknown"})
+
+# Drop rows with missing values in essential columns like EmpID or StartDate
+df = df.dropna(subset=["EmpID", "StartDate"])
+
+# 2. Remove Outliers
+# Cap Current Employee Rating between 1 and 5
+df = df.withColumn("CurrentEmployeeRating", 
+                   when(col("CurrentEmployeeRating") < 1, 1)
+                   .when(col("CurrentEmployeeRating") > 5, 5)
+                   .otherwise(col("CurrentEmployeeRating")))
+
+# Investigate unrealistic values in LocationCode
+print("Unique LocationCode Values:")
+df.select("LocationCode").distinct().show()
+
+# 3. Remove Duplicates
+# Remove duplicate records
+df = df.dropDuplicates()
+
+# 4. Count employees in each department for every designation
+department_count = df.groupBy("Department", "Designation").count()
+print("Employee Count by Department and Designation:")
+department_count.show()
+
+# 5. Employee with the highest performance score in each department
+highest_performance = df.groupBy("Department").agg(spark_max("PerformanceScore").alias("MaxPerformanceScore"))
+print("Highest Performance Score by Department:")
+highest_performance.show()
+
+# Save the cleaned DataFrame (optional)
+df.write.csv("cleaned_emp_data.csv", header=True)
+
+# Close the Spark session
+spark.stop()
+
+
+
+Q2) Sales
+
+pip install pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, isnan, when, count, mean, sum as spark_sum
+
+# Initialize Spark Session
+spark = SparkSession.builder \
+    .appName("Sales Data Analysis") \
+    .getOrCreate()
+
+# Load the dataset
+file_path = "Sales Data.csv"  # Adjust the path to your dataset
+sales_df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# Display the schema and a few rows
+sales_df.printSchema()
+sales_df.show(5)
+
+# 1. Identify columns with missing values
+missing_values = sales_df.select([
+    count(when(col(c).isNull() | isnan(col(c)), c)).alias(c) for c in sales_df.columns
+])
+print("Missing values in each column:")
+missing_values.show()
+
+# Decide how to handle missing values
+# Example: Fill numerical columns with mean, or drop rows
+numeric_cols = ['Sales', 'Quantity Ordered']
+for col_name in numeric_cols:
+    mean_value = sales_df.select(mean(col(col_name))).collect()[0][0]
+    sales_df = sales_df.fillna({col_name: mean_value})
+
+# Drop rows where non-numeric columns have null values
+sales_df = sales_df.na.drop()
+
+# 2. Remove duplicate records
+sales_df = sales_df.dropDuplicates()
+
+# 3. Ensure numerical columns are correctly formatted
+sales_df = sales_df.withColumn("Sales", col("Sales").cast("float")) \
+                   .withColumn("Quantity Ordered", col("Quantity Ordered").cast("int")) \
+                   .withColumn("Price Each", col("Price Each").cast("float"))
+
+sales_df.printSchema()
+
+# 4. Check for and remove rows with negative values
+sales_df = sales_df.filter((col("Sales") >= 0) & 
+                           (col("Price Each") >= 0) & 
+                           (col("Quantity Ordered") >= 0))
+
+# 5. Find total sales for each product
+total_sales_per_product = sales_df.groupBy("Product").agg(spark_sum("Sales").alias("Total Sales"))
+total_sales_per_product.show()
+
+# Save cleaned data to a CSV file (optional)
+output_path = "cleaned_sales_data.csv"
+sales_df.write.csv(output_path, header=True)
+
+# Stop the Spark session
+spark.stop()
+
+
+
+Q3) Jobs
+
+pip install pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, regexp_extract, when, mean, count, lit
+
+# Initialize Spark Session
+spark = SparkSession.builder \
+    .appName("DS Jobs Analysis") \
+    .getOrCreate()
+
+# Load the dataset
+file_path = "Cleaned_DS_Jobs.csv"  # Adjust the path as needed
+jobs_df = spark.read.csv(file_path, header=True, inferSchema=True)
+
+# Display the schema and first few rows
+jobs_df.printSchema()
+jobs_df.show(5)
+
+# 1. Split Salary Estimate into Min and Max Salary
+jobs_df = jobs_df.withColumn("min_salary", regexp_extract(col("salary estimate"), r"(\d+)", 1).cast("int")) \
+                 .withColumn("max_salary", regexp_extract(col("salary estimate"), r"(\d+)-(\d+)", 2).cast("int"))
+
+# 2. Create Average Salary Column
+jobs_df = jobs_df.withColumn("average_salary", ((col("min_salary") + col("max_salary")) / 2).cast("float"))
+
+# 3. Replace -1 and 0 with 1 in Rating Column
+jobs_df = jobs_df.withColumn("Rating", when((col("Rating") == -1) | (col("Rating") == 0), 1).otherwise(col("Rating")))
+
+# 4. Replace Null Values in All Columns with -1
+jobs_df = jobs_df.fillna(-1)
+
+# 5. Group by Job Title and Calculate Average Salary
+average_salary_by_job = jobs_df.groupBy("Job Title").agg(mean("average_salary").alias("Average Salary"))
+average_salary_by_job.show()
+
+# 6. Group by Company Size and Calculate Average Salary
+average_salary_by_company_size = jobs_df.groupBy("Company Size").agg(mean("average_salary").alias("Average Salary"))
+average_salary_by_company_size.show()
+
+# Stop the Spark session
+spark.stop()
+

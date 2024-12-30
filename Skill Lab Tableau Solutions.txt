@@ -1,0 +1,183 @@
+Q1) Employee
+
+1. Bar Chart: Distribution of GenderCode
+Objective: Display the count of employees by GenderCode.
+Steps:
+Drag GenderCode to Columns.
+Drag Number of Records (or any suitable count measure) to Rows.
+Choose "Bar Chart" from the Marks dropdown.
+2. Pie Chart: Diversity of RaceDesc
+Objective: Visualize the distribution of RaceDesc.
+Steps:
+Drag RaceDesc to the Columns.
+Drag Number of Records to the Rows.
+Select "Pie Chart" from the Marks dropdown.
+Add RaceDesc to "Color" in the Marks pane for distinct segments.
+3. Bar Chart: Number of Employees for Each Title
+Objective: Display the count of employees by Title.
+Steps:
+Drag Title to Columns.
+Drag Number of Records to Rows.
+Use "Bar Chart" from the Marks dropdown.
+4. TreeMap/Bar Chart: Distribution Across Division
+Objective: Highlight how employees are distributed across Division.
+Steps for TreeMap:
+Drag Division to Columns.
+Drag Number of Records to Rows.
+Change the Marks type to "Treemap."
+Steps for Bar Chart:
+Drag Division to Columns.
+Drag Number of Records to Rows.
+Use the "Bar Chart" option.
+5. Line Chart: Employees Hired Annually
+Objective: Show hiring trends over time by StartDate.
+Steps:
+Create a calculated field: Year of StartDate (e.g., YEAR([StartDate])).
+Drag Year of StartDate to Columns.
+Drag Number of Records to Rows.
+Use "Line Chart" from the Marks dropdown.
+6. Bar Chart: Average Tenure by Division
+Objective: Calculate and visualize tenure as CurrentDate - StartDate.
+Steps:
+Create a calculated field for tenure: DATEDIFF('year', [StartDate], TODAY()).
+Drag Division to Columns.
+Drag the calculated field (Average Tenure) to Rows.
+Use "Bar Chart" from the Marks dropdown.
+7. Dashboard Creation
+Objective: Combine the above visualizations into an interactive dashboard.
+Steps:
+Go to the "Dashboard" menu and create a new dashboard.
+Drag all relevant sheets (created above) into the dashboard workspace.
+Add filters for Division, Department, and Year of StartDate:
+Drag the fields into the Filters pane.
+Enable "Show Filter" for interactivity.
+Arrange charts and visual elements for clarity and aesthetics.
+
+Suggestions for Effective Dashboards:
+Title and Descriptions: Add a clear title and concise descriptions for the dashboard.
+Interactivity: Use filters, dropdowns, and highlight actions.
+Color Palette: Ensure a consistent color scheme for readability.
+
+
+
+
+Q2) Sales
+
+1. Create a Bar Chart for Total Sales by Product
+Objective: Visualize total sales for each product.
+Steps:
+Drag Product to the Columns shelf.
+Drag Sales to the Rows shelf.
+Change the chart type to Bar Chart if it isn’t already.
+Sort the bars in descending order of sales for better visualization.
+2. Create a Line Chart for Total Sales Over Time by Month
+Objective: Analyze seasonality or trends in sales across months.
+Steps:
+Drag the Order Date (or equivalent time-related column) to the Columns shelf.
+Right-click on Order Date and set it to Month (or the desired time grouping).
+Drag Sales to the Rows shelf.
+Change the chart type to Line Chart.
+3. Bar Chart or Map for Top 10 Cities by Total Sales
+Objective: Identify the top-performing cities.
+Steps for a Bar Chart:
+Drag City to the Columns shelf.
+Drag Sales to the Rows shelf.
+Sort cities in descending order by sales.
+Use a filter on City to display only the Top 10 based on Sales.
+Steps for a Map:
+Drag City to Detail on the Marks card.
+Drag Sales to Size and/or Color on the Marks card.
+Ensure Tableau recognizes the geographic role of the City field (edit if needed).
+4. Stacked Bar Chart: Total Sales by Product Split by City
+Objective: Break down product sales by city.
+Steps:
+Drag Product to the Columns shelf.
+Drag Sales to the Rows shelf.
+Drag City to Color on the Marks card.
+Change the chart type to Stacked Bar Chart.
+5. Treemap or Matrix for Revenue Contribution by Product and City
+Objective: Show relative contributions visually.
+Steps for Treemap:
+Drag Product to Rows and City to Columns.
+Drag Sales to Size and Color on the Marks card.
+Change the chart type to Treemap.
+Steps for a Matrix:
+Drag City to the Rows shelf.
+Drag Product to the Columns shelf.
+Drag Sales to the Text field on the Marks card.
+6. Line Chart for Sales Trends of the Top 5 Products by Revenue
+Objective: Analyze trends for the highest-revenue products.
+Steps:
+Filter the dataset to show only the Top 5 Products by Sales.
+Drag Order Date to the Columns shelf (group by Month or Year).
+Drag Sales to the Rows shelf.
+Drag Product to Color on the Marks card to differentiate lines.
+7. Interactive Sales Performance Dashboard
+Objective: Combine key visualizations into a single dashboard.
+Steps:
+Create individual sheets for the visualizations mentioned above.
+Go to the Dashboard tab and drag each sheet into the canvas.
+Add Filters for City, Product, and Order Date using the Filter pane.
+Use actions to link filters between sheets (e.g., clicking on a product in one chart filters other charts).
+Format the dashboard for aesthetics, including titles and legends.
+
+Notes:
+Before starting, ensure your Tableau dataset has properly formatted fields (Sales as a measure, City and Product as dimensions).
+Use appropriate data types for time-related fields to enable grouping by months, years, etc.
+If you have Tableau-specific questions, let me know!
+
+
+
+Q3) Jobs
+
+1. Scatter Plot: Company Ratings Across Sectors
+Objective: Visualize the relationship between company ratings and sectors.
+Steps:
+Drag Sector to the Columns shelf.
+Drag Rating to the Rows shelf.
+Adjust the Marks card to Circle for better visualization.
+2. Bar Chart: Average Salary for Each Job Title
+Objective: Show average salaries for different job titles.
+Steps:
+Drag Job Title to the Columns shelf.
+Drag average_salary to the Rows shelf.
+Change the chart type to Bar Chart.
+3. Map Visualization: Job Openings by Location
+Objective: Display job openings on a map.
+Steps:
+Drag Location to the Detail on the Marks card.
+Drag Job Title to Tooltip.
+Ensure Tableau recognizes Location as a geographic role.
+4. Bar Chart: Average Salary by Sector
+Objective: Compare average salaries across sectors.
+Steps:
+Drag Sector to the Columns shelf.
+Drag average_salary to the Rows shelf.
+Sort the sectors by salary for better visualization.
+5. Box Plot: Salary Distribution by Company Size
+Objective: Understand how salaries vary with company size.
+Steps:
+Drag Company Size to the Columns shelf.
+Drag average_salary to the Rows shelf.
+Change the chart type to Box Plot.
+6. Stacked Bar Chart: Python, Tableau, and Spark Usage by Sector
+Objective: Analyze skill requirements across sectors.
+Steps:
+Create calculated fields for each skill:
+Python: IF CONTAINS([Skills], "Python") THEN 1 ELSE 0 END
+Tableau: IF CONTAINS([Skills], "Tableau") THEN 1 ELSE 0 END
+Spark: IF CONTAINS([Skills], "Spark") THEN 1 ELSE 0 END
+Drag Sector to the Columns shelf.
+Drag each calculated field (Python, Tableau, Spark) to the Rows shelf or Color.
+Change the chart type to Stacked Bar Chart.
+7. Sales Performance Dashboard
+Objective: Combine all visualizations into a single interactive dashboard.
+Steps:
+Create individual sheets for each visualization (scatter plot, bar chart, map, etc.).
+Go to the Dashboard tab and drag each sheet into the canvas.
+Add filters for Sector, Type of Ownership, and Industry.
+Use actions to link filters across the dashboard.
+
+Notes:
+Save your cleaned data with all transformations before importing it into Tableau.
+
